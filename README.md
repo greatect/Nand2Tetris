@@ -24,4 +24,4 @@ python3 Compiler.py   /path/to/folder
 The .hdl, .hack, .vm files can be loaded using the corresponding software in software\_tools.
 
 ## License
-The referenced software suite is under the GNU GPL (General Public License).
+This repository is under GNU GPL (General Public License), in accordance with the referenced software suite.
