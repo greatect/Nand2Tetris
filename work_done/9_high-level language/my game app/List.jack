@@ -1,0 +1,44 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/09/List/List.jack
+
+/** Represents a linked list of locations. */
+class List {
+    field Location data;     // a list consists of a data field,
+    field List next;         // followed by a list
+
+    /* Creates a List. */
+    constructor List new(Location car, List cdr) {
+        let data = car;       // the identifiers car and cdr are used in 
+        let next = cdr;       // memory of the Lisp programming language
+        return this;
+    }
+
+    /** Accessors. */
+    method Location get_data() { return data; }
+    method Location get_next() { return next; }
+
+    /** Disposes this List by recursively disposing its tail. */
+    method void dispose() {
+        if (~(next = null)) {
+            do next.dispose();
+        }
+	do data.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    // More list processing methods can come here.
+    method void delete_next() {
+	var List futurenext;
+	var Location nextdata;
+        if (next = null) { return; }
+	let futurenext = next.get_next();
+	let nextdata = next.get_data();
+	do nextdata.dispose();
+        do Memory.deAlloc(next);
+	let next = futurenext;
+	return;
+    }
+}

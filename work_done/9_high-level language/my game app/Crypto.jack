@@ -1,0 +1,10 @@
+class Crypto{
+	function int mod(int x, int y){
+		let x = (x-((x/y)*y));
+		if (x < 0) { let x = x+y; }
+		return x;
+	}
+	function int rand_from_seed(int seed){
+		return Crypto.mod((seed * 17263) + 28597, 32479);
+	}
+}

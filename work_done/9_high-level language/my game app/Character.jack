@@ -1,0 +1,62 @@
+class Character{
+	field String name;
+	field Status status;
+	field Location stand;
+
+	constructor Character new(String input_name, int size){
+		let name = input_name;
+		let status = Status.new(0);
+		let stand = Location.new(size,0,-1);
+		do status.display(true);
+		do stand.display(true);
+		return this;
+	}
+	method void dispose(){
+		do name.dispose();
+		do status.dispose();
+		do stand.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
+	method Status get_status(){
+		return status;
+	}
+
+	method int oper(){
+                var char k;
+                let k = Keyboard.keyPressed();
+                if (k = 0) { return 0; }
+                if (k = 130){ // Left
+                        if (stand.get_dir() = 0) { do stand.dec_x(); }
+                        else { do stand.set_dir(0); }
+                }
+                if (k = 131){ // Up
+                        if (stand.get_dir() = 1) { do stand.dec_y(); }
+                        else { do stand.set_dir(1); }
+                }
+                if (k = 132){ // Right
+                        if (stand.get_dir() = 2) { do stand.inc_x(); }
+                        else { do stand.set_dir(2); }
+                }
+                if (k = 133){ // Down
+                        if (stand.get_dir() = 3) { do stand.inc_y(); }
+                        else { do stand.set_dir(3); }
+                }
+		return 1;
+        }
+	method void update(){
+		do stand.update(0);
+		return;
+	}
+
+	method int distance(int x, int y)
+	{
+		var int dx, dy;
+		let dx = x - stand.get_x();
+		let dy = y - stand.get_y();
+		if (dx < 0) { let dx = -dx; }
+		if (dy < 0) { let dy = -dy; }
+		return Math.max(dx, dy);
+	}
+
+}

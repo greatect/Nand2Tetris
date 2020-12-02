@@ -1,0 +1,99 @@
+class Location{
+	static boolean has_init;
+	static int MIN_X, MIN_Y, MAX_X, MAX_Y, MAX_VAL;
+	static int SEED;
+	field int x, y, dir;
+	field int size, speed, lifetime, residue;
+	constructor Location new(int input_size, int input_speed, int input_lifetime){
+		if (has_init) { let x = next_rand(); }
+		else { let x = 100; }
+		do init();
+		let y = next_rand();
+		let dir = Crypto.mod( next_rand(), 4 );
+		let residue = next_rand();
+		if ((input_size < 1) | (input_size > MAX_VAL)) { let input_size = 8; }
+		if ((input_speed < 0) | (input_speed > MAX_VAL)) { let input_speed = 0; }
+		if (input_lifetime < 0) { let input_lifetime = 1; }
+		let size = input_size;
+		let speed = input_speed + 1;
+		let lifetime = input_lifetime;
+		let SEED = SEED + 1;
+		do display(true);
+		return this;
+	}
+	method void dispose(){
+		do display(false);
+		do Memory.deAlloc(this);
+		return;
+	}
+	method void init(){
+		if (has_init) { return; }
+		let has_init = true;
+		let MIN_X = 256-100; // +-200
+		let MAX_X = 256+100;
+		let MIN_Y = 128-80;  // +-80
+		let MAX_Y = 128+80;
+		let MAX_VAL = 20;
+		let SEED = 80;
+		do Screen.setColor(true);
+		do Screen.drawLine(MIN_X-1, MIN_Y-1, MAX_X+1, MIN_Y-1);
+		do Screen.drawLine(MAX_X+1, MIN_Y-1, MAX_X+1, MAX_Y+1);
+		do Screen.drawLine(MAX_X+1, MAX_Y+1, MIN_X-1, MAX_Y+1);
+		do Screen.drawLine(MIN_X-1, MAX_Y+1, MIN_X-1, MIN_Y-1);
+		return;
+	}
+	method int next_rand(){
+		var int ret;
+		let ret = SEED;
+		let SEED = Crypto.rand_from_seed(SEED);
+		return ret;
+	}
+	method int get_x(){ return Crypto.mod(x, MAX_X - MIN_X - size) + (size/2); }
+	method int get_y(){ return Crypto.mod(y, MAX_Y - MIN_Y - size) + (size/2); }
+	method int get_residue(){ return residue; }
+	method int get_dir(){ return dir; }
+	method int set_dir(int set){
+		if((set<0) | (set>3)) { return -1; }
+		let dir = set;
+		return 0;
+	}
+	method void inc_x(){ do display(false); let x = x+2; do display(true); return; }
+	method void dec_x(){ do display(false); let x = x-2; do display(true); return; }
+	method void inc_y(){ do display(false); let y = y+2; do display(true); return; }
+	method void dec_y(){ do display(false); let y = y-2; do display(true); return; }
+	method boolean dieout(){
+		if (lifetime < 1) { return true; }
+		let lifetime = lifetime -1;
+		return false;
+	}
+
+	method void display(boolean color){
+		var int disp_x, disp_y;
+		do Screen.setColor(color);
+		let disp_x = Crypto.mod(x, MAX_X - MIN_X - size) + MIN_X;
+		let disp_y = Crypto.mod(y, MAX_Y - MIN_Y - size) + MIN_Y;
+		/*
+		do Output.printInt(disp_x);
+		do Output.println();
+		do Output.printInt(disp_y);
+		do Output.println();
+		*/
+		if (size < 0) { return; }
+		if (size > 0) {
+			do Screen.drawRectangle(disp_x, disp_y, disp_x + size, disp_y + size);
+		}
+		else {
+			do Screen.drawPixel(disp_x, disp_y);
+		}
+		return;
+	}
+	method void update(int timestamp){
+		if (speed = 1) { do display(true); return; }
+		if (Crypto.mod(timestamp - residue, speed) = 0) { return; }
+		if (dir = 0) { do dec_x(); }
+		if (dir = 1) { do dec_y(); }
+		if (dir = 2) { do inc_x(); }
+		if (dir = 3) { do inc_y(); }
+		return;
+	}
+}

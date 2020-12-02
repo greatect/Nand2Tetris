@@ -1,0 +1,56 @@
+class Main{
+	function void main(){
+		var Character Alice;
+		var Status status;
+		var Location force;
+		var List head, curr, next;
+		var boolean cond;
+		var int i, diff;
+		var int size;
+		let size = 10;
+		let Alice = Character.new("Alice", size);
+		let status = Alice.get_status();
+		let head = null;
+		do Output.moveCursor(21, 29);
+		do Output.printString("Score: ");
+		let i = 0;
+		while (i < 25){
+			let diff = Crypto.mod( Crypto.rand_from_seed(-i), 7) - 3;
+			let head = List.new(Location.new(6+diff, 7-diff*2, i*2), head);
+			let i = i+1;
+		}
+		while (true){
+			do Alice.update();
+			if (~(Crypto.mod(i, 3) = 1)){
+				do Alice.oper();
+			}
+			let curr = head;
+			while (~(curr.get_next() = null)){
+				let next = curr.get_next();
+				let force = next.get_data();
+				do force.display(false);
+				do force.update(i);
+				do force.display(true);
+				let cond = false;
+				if (Crypto.mod(i - force.get_residue(), 30) = 0){
+					let cond = force.dieout();
+				}
+				if (Alice.distance(force.get_x(), force.get_y()) < (size/2 + 2)){
+					if( status.harm(1) ){ return; }
+					let cond = true;
+				}
+				if (cond){
+					do curr.delete_next();
+					let diff = Crypto.mod( Crypto.rand_from_seed(-i), 7) - 3;
+					let head = List.new(Location.new(6+diff, 7-diff*2, 10), head);
+				}
+				else{ let curr = next; }
+			}
+			do Sys.wait(10);
+			do Output.moveCursor(21, 34);
+			do Output.printInt(i / 100);
+			let i = i+1;
+		}
+		return;
+	}
+}

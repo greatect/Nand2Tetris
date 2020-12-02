@@ -1,0 +1,83 @@
+class Status{
+	static int Initial_Value;
+	static int Value_Grid;
+	static int Value_Space;
+	static int Value_Shift;
+	static int Num_Status;
+
+	//hp,dfs,mgc
+	//mgc lowers the speed of nearby objects
+	field Array status;
+	field int offset;
+
+	constructor Status new(int shift){
+		var int i;
+		do init();
+		let offset = shift;
+		let status = Array.new(Num_Status);
+		let i = 0;
+		while (i < Num_Status){
+			let status[i] = Initial_Value - i - i;
+			let i = i+1;
+		}
+		return this;
+	}
+	method void dispose(){
+		do status.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
+	method void init(){
+		let Initial_Value = 10;
+		let Value_Grid = 6;
+		let Value_Space = 5;
+		let Value_Shift = 28;
+		let Num_Status = 3;
+		return;
+	}
+	method void display(boolean color){
+		var int i, h, w;
+		var String name;
+		do Screen.setColor(color);
+		let i = 0;
+		while (i < Num_Status){
+			if (i = 0) { let name = " HP"; }
+			if (i = 1) { let name = "DFS"; }
+			if (i = 2) { let name = "MAG"; }
+			let h = i * (Value_Grid + Value_Space);
+			let w = status[i] * Value_Grid;
+			do Output.moveCursor(i, offset);
+			do Output.printString(name);
+			do Screen.drawRectangle(offset*8 + Value_Shift, h, offset*8 + Value_Shift + w, h + Value_Grid);
+			let i = i+1;
+		}
+		return;
+	}
+	function void gameover(){
+		do Output.moveCursor(11, 28);
+		do Output.printString("Game Over");
+		return;
+	}
+	method int get_dfs(){ return status[1]; }
+	method int get_mgc(){ return status[2]; }
+	method int harm(int v){
+		do display(false);
+		if ((v > status[0]) | (v = status[0])){
+			let status[0] = 0;
+			do display(true);
+			do Sys.wait(50);
+			do Status.gameover();
+			return 1;
+		}
+		let status[0] = status[0] - v;
+		do display(true);
+		return 0;
+	}
+	method void levelup(int hp, int dfs, int mgc){
+		let status[0] = status[0] + hp;
+		let status[1] = status[1] + dfs;
+		let status[2] = status[2] + mgc;
+		return;
+	}
+}
+
